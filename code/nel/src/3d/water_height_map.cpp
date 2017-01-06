@@ -24,6 +24,9 @@
 #include <cmath>
 
 
+#ifdef DEBUG_NEW
+#define new DEBUG_NEW
+#endif
 
 namespace NL3D
 {
@@ -73,7 +76,7 @@ void CWaterHeightMap::updateUserPos()
 
 	nlassert(_Size != 0);
 	if ((uint) x == _X && (uint) y == _Y) return;
-	if ((uint) abs((long int)(x - _X)) < _Size && (uint) abs((long int)(y - _Y)) < _Size) // are there common pixels with the previous location?
+	if ((uint) std::abs((sint)(x - _X)) < _Size && (uint) std::abs((sint)(y - _Y)) < _Size) // are there common pixels with the previous location?
 	{
 		// compute zone
 

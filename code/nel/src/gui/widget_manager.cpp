@@ -1762,16 +1762,12 @@ namespace NLGUI
 
 		// *** According to best matching hotspot, and new screen resolution, move the window
 		// x
-		if(bestXHotSpot==Hotspot_xL)
-			x= x;
-		else if(bestXHotSpot==Hotspot_xM)
+		if(bestXHotSpot==Hotspot_xM)
 			x= newScreenW/2 + posXToMiddle - w/2;
 		else if(bestXHotSpot==Hotspot_xR)
 			x= newScreenW - posXToRight - w;
 		// y
-		if(bestYHotSpot==Hotspot_Bx)
-			y= y;
-		else if(bestYHotSpot==Hotspot_Mx)
+		if(bestYHotSpot==Hotspot_Mx)
 			y= newScreenH/2 + posYToMiddle + h/2;
 		else if(bestYHotSpot==Hotspot_Tx)
 			y= newScreenH - posYToTop;
@@ -3334,7 +3330,7 @@ namespace NLGUI
 		{
 			const CProcAction &action = proc.Actions[i];
 			// test if the condition for the action is valid
-			if( action.CondBlocks.size() > 0 )
+			if (!action.CondBlocks.empty())
 			{
 				CInterfaceExprValue result;
 				result.setBool( false );

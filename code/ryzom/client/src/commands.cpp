@@ -171,7 +171,7 @@ NLMISC_COMMAND(follow, "Follow the target", "")
 NLMISC_COMMAND(where, "Ask information on the position", "")
 {
 	// Check parameters.
-	if(args.size() == 0)
+	if(args.empty())
 	{	// Create the message and send.
 		const string msgName = "COMMAND:WHERE";
 		CBitMemStream out;
@@ -212,7 +212,7 @@ NLMISC_COMMAND(who, "Display all players currently in region","[<options (GM, ch
 NLMISC_COMMAND(afk, "Set the player as 'away from keyboard'","[<custom text>]")
 {
 	string customText;
-	if( args.size() > 0 )
+	if (!args.empty())
 	{
 		customText = args[0];
 	}
@@ -738,7 +738,7 @@ NLMISC_COMMAND(bugReport, "Call the bug report tool with dump", "<AddScreenshot>
 
 NLMISC_COMMAND(a, "Execute an admin command on you","<cmd> <arg>")
 {
-	if(args.size() == 0)
+	if(args.empty())
 		return false;
 
 	CBitMemStream out;
@@ -782,7 +782,7 @@ NLMISC_COMMAND(a, "Execute an admin command on you","<cmd> <arg>")
 
 NLMISC_COMMAND(b, "Execute an admin command on your target","<cmd> <arg>")
 {
-	if(args.size() == 0)
+	if(args.empty())
 		return false;
 
 	CBitMemStream out;
@@ -873,7 +873,7 @@ NLMISC_COMMAND(boxes, "Show/Hide selection boxes", "[<state> : 0 to Hide, anythi
 #endif // FINAL_VERSION
 
 	// Invert Current State
-	if(args.size() == 0)
+	if(args.empty())
 	{
 		// Invert the current value.
 		ClientCfg.DrawBoxes = !ClientCfg.DrawBoxes;
@@ -1323,7 +1323,7 @@ NLMISC_COMMAND(setMissingDynstringText, "set text of missing dynamic string"," <
 
 NLMISC_COMMAND(ah, "Launch an action handler", "<ActionHandler> <AHparam>")
 {
-	if (args.size() == 0)
+	if (args.empty())
 		return false;
 
 	if (!ClientCfg.AllowDebugLua && toLower(args[0]) == "lua")
@@ -2041,17 +2041,16 @@ NLMISC_COMMAND(entity, "Create an entity on the user or just remove it if Form n
 		node = NLGUI::CDBManager::getInstance()->getDbProp("SERVER:Entities:E"+toString("%d", slot)+":P"+toString("%d", CLFECOMMON::PROPERTY_ORIENTATION), false);
 		if(node)
 		{
-			float dir = (float)atan2(UserEntity->front().y, UserEntity->front().x);
-			prop = (sint64 *)(&dir);
-			node->setValue64(*prop);
+			C64BitsParts rot;
+			rot.f[0] = (float)atan2(UserEntity->front().y, UserEntity->front().x);
+			rot.f[1] = 0.f; // to be sure 64 bits value is initialized
+			node->setValue64(rot.i64[0]);
 		}
 		// Set Mode
 		node = NLGUI::CDBManager::getInstance()->getDbProp("SERVER:Entities:E"+toString("%d", slot)+":P"+toString("%d", CLFECOMMON::PROPERTY_MODE), false);
 		if(node)
 		{
-			MBEHAV::EMode m = MBEHAV::NORMAL;
-			prop = (sint64 *)&m;
-			node->setValue64(*prop);
+			node->setValue64((sint64)MBEHAV::NORMAL);
 			EntitiesMngr.updateVisualProperty(0, slot, CLFECOMMON::PROPERTY_MODE);
 		}
 		// Set Visual Properties
@@ -2716,7 +2715,7 @@ NLMISC_COMMAND(particle, "Create a particule at the user position (play FireWork
 	string fn;
 
 	// Check parameters.
-	if(args.size() == 0)
+	if(args.empty())
 	{
 		fn = "FireWorkA_with_sound.ps";
 	}
@@ -2842,8 +2841,12 @@ NLMISC_COMMAND(orient, "Orient an entity", "Slot: [1-254] orient(degree) [dt(tic
 			fromString(args[2], dt);
 		// Write the position in the DB.
 		float	fRot= (float)(rot*Pi/180.f);
-		uint64	val= *(uint32*)(&fRot);
-		IngameDbMngr.setProp("Entities:E" + toString(slot) + ":P"+toString(CLFECOMMON::PROPERTY_ORIENTATION), val);
+
+		C64BitsParts r;
+		r.f[0] = fRot;
+		r.f[1] = 0.f; // to be sure 64 bits value is initialized
+
+		IngameDbMngr.setProp("Entities:E" + toString(slot) + ":P"+toString(CLFECOMMON::PROPERTY_ORIENTATION), r.u32[0]);
 		// Update the position.
 		EntitiesMngr.updateVisualProperty(NetMngr.getCurrentServerTick()+dt, slot, CLFECOMMON::PROPERTY_ORIENTATION);
 	}
@@ -3749,6 +3752,23 @@ NLMISC_COMMAND(test, "", "")
 	return true;
 }
 
+NLMISC_COMMAND(testLongBubble, "To display a bubble with a long text", "<entity>")
+{
+	if (args.size() != 1) return false;
+	uint entityId;
+	fromString(args[0], entityId);
+
+	CInterfaceManager *pIM = CInterfaceManager::getInstance();
+	ucstring text("test\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\n");
+	uint duration = CWidgetManager::getInstance()->getSystemOption(CWidgetManager::OptionTimeoutBubbles).getValSInt32();
+
+	CEntityCL *entity = EntitiesMngr.entity(entityId);
+	if (entity)
+		InSceneBubbleManager.chatOpen(entity->dataSetId(), text, duration);
+
+	return true;
+}
+
 
 //-----------------------------------------------
 /// Macro to set the new dist to front(back or side) for a given sheet.
@@ -3910,7 +3930,7 @@ NLMISC_COMMAND (url, "launch a browser to the specified url", "<url>")
 	if (args.size () != 1)
 		return false;
 
-	return openURL(args[0].c_str());
+	return openURL(args[0]);
 }
 
 NLMISC_COMMAND( reconnect, "Reconnect to the same shard (self Far TP)", "")
@@ -5737,7 +5757,7 @@ NLMISC_COMMAND(em, "emote command", "<emote phrase>")
 	if( pIM )
 	{
 		string emotePhrase;
-		if( args.size() > 0 )
+		if (!args.empty())
 		{
 			emotePhrase = args[0];
 		}
@@ -5762,7 +5782,7 @@ NLMISC_COMMAND(guildmotd, "Set or see the guild message of the day","<msg of the
 		return false;
 
 	string gmotd;
-	if( args.size() > 0 )
+	if (!args.empty())
 	{
 		gmotd = args[0];
 	}

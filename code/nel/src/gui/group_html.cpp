@@ -513,7 +513,7 @@ namespace NLGUI
 								// redirect, get the location and try browse again
 								// we cant use curl redirection because 'addHTTPGetParams()' must be called on new destination
 								std::string location(_CurlWWW->getLocationHeader());
-								if (location.size() > 0)
+								if (!location.empty())
 								{
 	#ifdef LOG_DL
 									nlwarning("(%s) request (%d) redirected to (len %d) '%s'", _Id.c_str(), _RedirectsRemaining, location.size(), location.c_str());
@@ -615,7 +615,7 @@ namespace NLGUI
 		}
 		RunningCurls = NewRunningCurls;
 	#ifdef LOG_DL
-		if (RunningCurls > 0 || Curls.size() > 0)
+		if (RunningCurls > 0 || !Curls.empty())
 			nlwarning("(%s) RunningCurls %d, _Curls %d", _Id.c_str(), RunningCurls, Curls.size());
 	#endif
 	}
@@ -838,6 +838,7 @@ namespace NLGUI
 		result.R = 255 * hueToRgb(m1, m2, h + 1.0f/3.0f);
 		result.G = 255 * hueToRgb(m1, m2, h);
 		result.B = 255 * hueToRgb(m1, m2, h - 1.0f/3.0f);
+		result.A = 255;
 	}
 
 	class CNameToCol
@@ -1628,7 +1629,7 @@ namespace NLGUI
 
 							// Action handler parameters : "name=group_html_id|form=id_of_the_form|submit_button=button_name"
 							string param = "name=" + getId() + "|form=" + toString (_Forms.size()-1) + "|submit_button=" + name + "|submit_button_type=submit";
-							if (text.size() > 0)
+							if (!text.empty())
 							{
 								// escape AH param separator
 								string tmp = text;
@@ -1964,7 +1965,7 @@ namespace NLGUI
 
 					// Table must fit the container size
 
-					addGroup (table, 0);
+					addHtmlGroup (table, 0);
 
 					_Tables.push_back(table);
 
@@ -2014,7 +2015,6 @@ namespace NLGUI
 								it = styles.find("background-image");
 								if (it != styles.end())
 								{
-									nlinfo("found background-image %s", it->second.c_str());
 									string image = (*it).second;
 									string::size_type texExt = toLower(image).find("url(");
 									// Url image
@@ -3759,7 +3759,7 @@ namespace NLGUI
 		newParagraph->setIndent(_Indent);
 
 		// Add to the group
-		addGroup (newParagraph, beginSpace);
+		addHtmlGroup (newParagraph, beginSpace);
 		_Paragraph = newParagraph;
 
 		paragraphChange ();
@@ -3806,7 +3806,7 @@ namespace NLGUI
 
 
 		CUrlParser uri(url);
-		if (uri.hash.size() > 0)
+		if (!uri.hash.empty())
 		{
 			// Anchor to scroll after page has loaded
 			_UrlFragment = uri.hash;
@@ -3952,7 +3952,7 @@ namespace NLGUI
 
 	void CGroupHTML::registerAnchor(CInterfaceElement* elm)
 	{
-		if (_AnchorName.size() > 0)
+		if (!_AnchorName.empty())
 		{
 			for(uint32 i=0; i <  _AnchorName.size(); ++i)
 			{
@@ -4545,7 +4545,7 @@ namespace NLGUI
 
 	// ***************************************************************************
 
-	void CGroupHTML::addGroup (CInterfaceGroup *group, uint beginSpace)
+	void CGroupHTML::addHtmlGroup (CInterfaceGroup *group, uint beginSpace)
 	{
 		if (!group)
 			return;
@@ -5124,7 +5124,7 @@ namespace NLGUI
 	#endif
 
 		// create <html> markup for image downloads
-		if (type.find("image/") == 0 && content.size() > 0)
+		if (type.find("image/") == 0 && !content.empty())
 		{
 			try
 			{

@@ -29,6 +29,10 @@
 using namespace NLMISC;
 using namespace std;
 
+#ifdef DEBUG_NEW
+#define new DEBUG_NEW
+#endif
+
 namespace	NL3D
 {
 
@@ -437,7 +441,7 @@ void CTileBank::cleanUnusedData ()
 // ***************************************************************************
 CTileNoiseMap *CTileBank::getTileNoiseMap (uint tileNumber, uint tileSubNoise)
 {
-	if (_DisplacementMap.size() == 0)
+	if (_DisplacementMap.empty())
 	{
 		// it happens when serial a tile bank with version < 4
 		return NULL;

@@ -48,6 +48,10 @@
 	#define CHECK_PS_INTEGRITY
 #endif
 
+#ifdef DEBUG_NEW
+#define new DEBUG_NEW
+#endif
+
 namespace NL3D {
 
 
@@ -235,7 +239,7 @@ void CPSLocated::releaseAllRef()
 										 // If this happen, you can register with the registerDTorObserver
 										 // (observer pattern)
 										 // and override notifyTargetRemove to call releaseCollisionInfo
-	nlassert(_IntegrableForces.size() == 0);
+	nlassert(_IntegrableForces.empty());
 	nlassert(_NonIntegrableForceNbRefs == 0);
 	CHECK_PS_INTEGRITY
 }
@@ -476,7 +480,7 @@ uint CPSLocated::querryMaxWantedNumFaces(void)
 
 /// ***************************************************************************************
 /// tells whether there are alive entities / particles in the system
-bool CPSLocated::hasParticles(void) const
+bool CPSLocated::hasParticles() const
 {
 	NL_PS_FUNC(CPSLocated_hasParticles)
 	CHECK_PS_INTEGRITY
@@ -490,7 +494,7 @@ bool CPSLocated::hasParticles(void) const
 
 /// ***************************************************************************************
 /// tells whether there are alive emitters
-bool CPSLocated::hasEmitters(void) const
+bool CPSLocated::hasEmitters() const
 {
 	NL_PS_FUNC(CPSLocated_hasEmitters)
 	CHECK_PS_INTEGRITY
@@ -835,7 +839,7 @@ CPSLocated::~CPSLocated()
 										 // If this happen, you can register with the registerDTorObserver
 										 // (observer pattern)
 										 // and override notifyTargetRemove to call releaseCollisionInfo
-	nlassert(_IntegrableForces.size() == 0);
+	nlassert(_IntegrableForces.empty());
 	nlassert(_NonIntegrableForceNbRefs == 0);
 
 	// delete all bindable

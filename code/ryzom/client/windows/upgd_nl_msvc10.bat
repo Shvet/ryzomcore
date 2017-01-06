@@ -6,7 +6,7 @@ if "x%ROOTPATH%x" == "xx" (
 )
 
 rem We used this hack because to client 2.1 to 3.0 patch,
-rem MSVC10 DLLs are using the same name and are deleted during patch
+rem VC++ 2010 DLLs are using the same name and are deleted during patch
 if exist %ROOTPATH%\msvcp100_win32.dll (
 	if exist %ROOTPATH%\msvcp100.dll del %ROOTPATH%\msvcp100.dll
 	copy /Y %ROOTPATH%\msvcp100_win32.dll %ROOTPATH%\msvcp100.dll
